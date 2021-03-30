@@ -1,0 +1,14 @@
+{
+  "name": "realm-mapbox",
+  "version": "1.0.0",
+  "description": "Real-Time Location Updates with MongoDB Stitch, Change Streams, and Mapbox.",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Gerardo Tordoya <zherar7ordoya@outlook.com> (https://github.com/zherar7ordoya)",
+  "license": "MIT"
+}

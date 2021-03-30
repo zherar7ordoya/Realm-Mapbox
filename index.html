@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<head>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
+  <link
+    href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css"
+    rel="stylesheet"
+  />
+  <script src="https://s3.amazonaws.com/stitch-sdks/js/bundles/4.6.0/stitch.js"></script>
+</head>
+<html>
+  <body style="margin: 0">
+    <div id="map" style="width: 100vw; height: 100vh"></div>
+    <script>
+      const client = stitch.Stitch.initializeDefaultAppClient("mapbox-qhnww");
+      const db = client
+        .getServiceClient(stitch.RemoteMongoClient.factory, "mongodb-atlas")
+        .db("location_services");
+      mapboxgl.accessToken =
+        "pk.eyJ1IjoiemhlcmFyN29yZG95YSIsImEiOiJja213NmZhdHIwYzRpMm5wNmdzZGgxMHA5In0.JeDlYLYdoGhabTV_pesReQ";
+
+      var currentLocationMarker;
+
+      let map = new mapboxgl.Map({
+        container: "map",
+        style: "mapbox://styles/mapbox/streets-v11",
+        center: [121.4252, 37.7397],
+        zoom: 9,
+      });
+
+      map.on("load", async () => {
+        await client.auth.loginWithCredential(new stitch.AnonymousCredential());
+        let currentLocation = (
+          await db.collection("tracking").findOne({ username: "nraboy" })
+        ).coordinates;
+        currentLocationMarker = new mapboxgl.Marker()
+          .setLngLat(currentLocation)
+          .addTo(map);
+
+        const stream = await db.collection("tracking").watch({
+          "fullDocument.username": "nraboy",
+        });
+        stream.onNext((event) => {
+          currentLocationMarker.setLngLat(event.fullDocument.coordinates);
+        });
+      });
+    </script>
+  </body>
+</html>
